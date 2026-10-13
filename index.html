@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angry Bird vs 20 Singa: RBT Tahun 5 (Mata Jahitan)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Quicksand', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .font-game {
+            font-family: 'Fredoka One', cursive, sans-serif;
+        }
+        canvas {
+            touch-action: none;
+            background: linear-gradient(to bottom, #38bdf8 0%, #7dd3fc 50%, #4ade80 50%, #16a34a 100%);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f59e0b;
+            border-radius: 10px;
+        }
+
+        /* Penyesuaian Responsif Mesra Telefon Mod Menegak (Portrait) */
+        @media (max-width: 640px) {
+            header {
+                padding: 0.4rem 0.5rem !important;
+            }
+            .hud-card {
+                padding: 0.2rem 0.35rem !important;
+            }
+            .hud-card span:first-child {
+                font-size: 7px !important;
+            }
+            .hud-card span:last-child {
+                font-size: 0.85rem !important;
+            }
+            .instruction-banner {
+                font-size: 10px !important;
+                padding: 0.3rem 0.6rem !important;
+            }
+            .game-container {
+                min-height: auto !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <!-- Toast Notification -->
+    <div id="toastMsg" class="fixed top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-slate-950 font-bold px-6 py-3 rounded-2xl shadow-2xl border-2 border-yellow-200 z-50 transition-all duration-300 transform -translate-y-16 opacity-0 flex items-center gap-2 text-xs md:text-sm pointer-events-none">
+        <i class="fa-solid fa-bell"></i>
+        <span id="toastText">Notifikasi</span>
+    </div>
+
+    <!-- Start Game Modal / Overlay (Pendaftaran Murid) -->
+    <div id="startOverlay" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex justify-center items-center p-4 transition-opacity duration-300">
+        <div class="bg-slate-800 border-4 border-amber-500 rounded-3xl max-w-md w-full p-5 sm:p-6 text-center shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="text-4xl sm:text-5xl mb-2">🎯</div>
+            <h2 class="font-game text-xl sm:text-2xl md:text-3xl text-yellow-400 mb-1">ANGRY BIRD vs 20 SINGA</h2>
+            <p class="text-amber-200 text-xs md:text-sm font-semibold mb-4">RBT Tahun 5: Teknologi Rumah Tangga (Mata Jahitan)</p>
+            
+            <div class="space-y-3 text-left mb-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">Nama Murid <span class="text-red-400">*</span></label>
+                    <input type="text" id="inputName" placeholder="Contoh: Muhammad Ali" class="w-full bg-slate-900 border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-semibold text-sm focus:border-amber-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1 uppercase tracking-wider">Kelas <span class="text-red-400">*</span></label>
+                    <input type="text" id="inputClass" placeholder="Contoh: 5 Cemerlang" class="w-full bg-slate-900 border-2 border-slate-600 rounded-xl px-3.5 py-2.5 text-white font-semibold text-sm focus:border-amber-400 focus:outline-none">
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-game text-base sm:text-lg py-3 rounded-2xl border-2 border-yellow-200 shadow-xl transition transform hover:scale-105 active:scale-95">
+                <i class="fa-solid fa-play mr-1.5"></i> MULA BERMAIN
+            </button>
+        </div>
+    </div>
+
+    <header class="bg-amber-600 border-b-4 border-amber-800 p-2 md:p-3 shadow-lg flex flex-col sm:flex-row justify-between items-center gap-1.5 z-10 px-2 md:px-8">
+        <div class="flex items-center justify-between w-full sm:w-auto">
+            <div class="flex items-center space-x-2">
+                <div class="bg-red-600 border-2 border-white p-1 md:p-2.5 rounded-2xl shadow-md shrink-0">
+                    <span class="font-game text-sm sm:text-base md:text-2xl text-yellow-300">🎯</span>
+                </div>
+                <div>
+                    <h1 class="font-game text-xs sm:text-lg md:text-2xl text-yellow-300 tracking-wide drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] leading-tight">
+                        ANGRY BIRD vs 20 SINGA
+                    </h1>
+                    <p class="text-[9px] md:text-sm text-amber-100 font-bold hidden sm:block">RBT TAHUN 5: TEKNOLOGI RUMAH TANGGA (MATA JAHITAN)</p>
+                </div>
+            </div>
+
+            <!-- Butang Kawalan Bunyi & Skrin Penuh Pada Mod Menegak Telefon -->
+            <div class="flex items-center space-x-1 sm:hidden">
+                <button id="soundBtnMobile" onclick="toggleAudio()" class="bg-amber-700 hover:bg-amber-600 p-1.5 rounded-xl border border-amber-400 text-yellow-300 font-bold transition shadow text-xs">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button onclick="toggleFullScreen()" class="bg-amber-700 hover:bg-amber-600 p-1.5 rounded-xl border border-amber-400 text-yellow-300 font-bold transition shadow text-xs">
+                    <i class="fa-solid fa-expand"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between sm:justify-end space-x-1.5 md:space-x-3 w-full sm:w-auto">
+            <!-- Kad HUD Status -->
+            <div class="grid grid-cols-3 gap-1 sm:flex sm:space-x-2 flex-1 sm:flex-none">
+                <div class="hud-card bg-amber-900/90 px-2 py-1 rounded-xl border border-amber-500/50 text-center shadow">
+                    <span class="text-[8px] md:text-[10px] text-amber-200 block uppercase font-bold tracking-wider">Markah</span>
+                    <span id="scoreText" class="font-game text-xs sm:text-sm md:text-2xl text-yellow-400">0</span>
+                </div>
+
+                <div class="hud-card bg-amber-900/90 px-2 py-1 rounded-xl border border-amber-500/50 text-center shadow">
+                    <span class="text-[8px] md:text-[10px] text-amber-200 block uppercase font-bold tracking-wider">Burung</span>
+                    <span id="livesText" class="font-game text-xs sm:text-sm md:text-2xl text-yellow-300">20 🐦</span>
+                </div>
+
+                <div class="hud-card bg-amber-900/90 px-2 py-1 rounded-xl border border-amber-500/50 text-center shadow">
+                    <span class="text-[8px] md:text-[10px] text-amber-200 block uppercase font-bold tracking-wider">Tewas</span>
+                    <span id="defeatedText" class="font-game text-xs sm:text-sm md:text-2xl text-red-400">0 / 20</span>
+                </div>
+            </div>
+
+            <!-- Butang Tindakan -->
+            <div class="flex items-center space-x-1 sm:space-x-2 shrink-0">
+                <button onclick="confirmEarlyEnd()" class="bg-emerald-700 hover:bg-emerald-600 p-1.5 md:p-2 rounded-xl border border-emerald-400 text-yellow-300 font-bold transition shadow flex items-center gap-1 text-xs md:text-base" title="Hantar Markah Terkini & Tamat">
+                    <i class="fa-solid fa-paper-plane text-xs md:text-lg"></i>
+                    <span class="hidden md:inline">Hantar & Tamat</span>
+                </button>
+
+                <button onclick="resetGame()" class="bg-red-600 hover:bg-red-500 text-white font-game px-2 py-1.5 md:px-3.5 md:py-2 rounded-xl border-2 border-red-300 transition shadow flex items-center gap-1 text-xs md:text-base">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span class="hidden md:inline">Mula Semula</span>
+                </button>
+
+                <!-- Kawalan Komputer / Skrin Lebar -->
+                <button id="soundBtn" onclick="toggleAudio()" class="hidden sm:block bg-amber-700 hover:bg-amber-600 p-2 rounded-xl border border-amber-400 text-yellow-300 font-bold transition shadow" title="Bunyi On/Off">
+                    <i id="soundIcon" class="fa-solid fa-volume-high text-xs md:text-lg"></i>
+                </button>
+                <button onclick="toggleFullScreen()" class="hidden sm:block bg-amber-700 hover:bg-amber-600 p-2 rounded-xl border border-amber-400 text-yellow-300 font-bold transition shadow" title="Skrin Penuh">
+                    <i class="fa-solid fa-expand text-xs md:text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative flex-1 flex flex-col justify-center items-center p-1 md:p-4 w-full max-w-7xl mx-auto my-auto">
+        <!-- Spanduk Arahan -->
+        <div class="instruction-banner w-full flex justify-between items-center text-[10px] md:text-sm bg-slate-800/90 backdrop-blur border border-slate-700 rounded-xl p-1.5 px-3 mb-1.5 text-slate-200 shadow-md">
+            <span><i class="fa-solid fa-hand-pointer text-yellow-400 mr-1 animate-pulse"></i> Tarik lastik untuk menembak singa! (20 ekor burung)</span>
+            <span id="playerBadge" class="hidden sm:inline font-bold text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded-lg border border-amber-600/40">1 Singa = 1 Soalan RBT</span>
+        </div>
+
+        <!-- Bekas Kanvas Permainan -->
+        <div class="game-container relative w-full bg-black rounded-2xl overflow-hidden border-2 md:border-4 border-amber-800 shadow-2xl aspect-[16/9] flex justify-center items-center">
+            <canvas id="gameCanvas" width="1280" height="720" class="w-full h-full block cursor-crosshair object-contain"></canvas>
+        </div>
+    </main>
+
+    <!-- Quiz Modal -->
+    <div id="quizModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden justify-center items-center p-2 md:p-4 z-50">
+        <div class="quiz-box bg-slate-800 border-4 border-amber-500 rounded-3xl max-w-2xl w-full p-4 md:p-6 shadow-2xl transform transition-all relative overflow-hidden flex flex-col max-h-[95vh]">
+            
+            <div class="flex justify-between items-center border-b-2 border-slate-700 pb-2 mb-3">
+                <div class="flex items-center space-x-2">
+                    <span id="modalLionBadge" class="bg-amber-500 font-game text-sm md:text-xl px-2.5 py-0.5 md:py-1 rounded-full text-slate-900 border-2 border-yellow-200 shadow">
+                        Singa #1
+                    </span>
+                    <h3 class="font-game text-base md:text-xl text-yellow-400">Soalan RBT Tahun 5</h3>
+                </div>
+                <button onclick="closeQuizModal()" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto pr-1 flex-1">
+                <p id="quizQuestion" class="quiz-q text-sm md:text-lg font-bold text-slate-100 mb-3 bg-slate-900/90 p-3 md:p-4 rounded-2xl border border-slate-700 leading-relaxed shadow-inner">
+                    Soalan akan terpapar di sini...
+                </p>
+
+                <div id="optionsContainer" class="grid grid-cols-1 gap-2 md:gap-3 mb-3"></div>
+
+                <div id="feedbackBox" class="hidden p-3 rounded-2xl border-2 font-bold text-center text-xs md:text-base mb-2"></div>
+            </div>
+
+            <div class="mt-2 pt-2 border-t border-slate-700 flex justify-between items-center text-xs">
+                <span class="text-[10px] md:text-xs text-slate-400 font-semibold"><i class="fa-solid fa-circle-info text-amber-400 mr-1"></i> Jawab betul untuk menambah markah!</span>
+                <button id="nextBtn" onclick="closeQuizModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-game px-4 md:px-6 py-1.5 md:py-2 rounded-xl border-2 border-yellow-200 shadow transition hidden">
+                    Teruskan <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pengesahan Hantar & Tamat Awal -->
+    <div id="confirmEndModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden justify-center items-center p-4 z-50">
+        <div class="bg-slate-800 border-4 border-amber-500 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl">
+            <div class="text-4xl mb-3">⚠️</div>
+            <h3 class="font-game text-xl text-yellow-400 mb-2">Tamatkan & Hantar Markah?</h3>
+            <p class="text-slate-300 text-xs md:text-sm mb-5">
+                Anda belum menyelesaikan semua 20 soalan. Adakah anda ingin menamatkan permainan sekarang dan merekodkan markah terkini ke Google Sheets guru?
+            </p>
+            <div class="flex justify-center gap-3">
+                <button onclick="closeConfirmEndModal()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl border border-slate-500 transition text-sm">
+                    Sambung Bermain
+                </button>
+                <button onclick="processEarlyEnd()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl border border-emerald-300 transition text-sm">
+                    Ya, Hantar Markah
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Modal -->
+    <div id="victoryModal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden justify-center items-center p-4 z-50">
+        <div class="bg-slate-800 border-4 border-yellow-400 rounded-3xl max-w-2xl w-full p-6 text-center shadow-2xl relative flex flex-col max-h-[90vh]">
+            <div id="victoryIcon" class="text-5xl md:text-6xl my-2">🏆</div>
+            <h2 id="victoryTitle" class="font-game text-2xl md:text-4xl text-yellow-400 mb-1">PERMAINAN TAMAT</h2>
+            <p id="victorySubtitle" class="text-slate-300 text-sm mb-4 font-semibold">Keputusan Cabaran Soalan RBT Mata Jahitan!</p>
+
+            <div id="starsDisplay" class="flex justify-center gap-2 text-3xl md:text-4xl text-yellow-400 mb-4">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-700 shadow">
+                    <span class="text-xs text-slate-400 block uppercase font-bold tracking-wider">Jumlah Markah</span>
+                    <span id="finalScore" class="font-game text-3xl text-yellow-400">0</span>
+                </div>
+                <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-700 shadow">
+                    <span class="text-xs text-slate-400 block uppercase font-bold tracking-wider">Ketepatan Jawapan</span>
+                    <span id="finalAccuracy" class="font-game text-3xl text-emerald-400">0%</span>
+                </div>
+            </div>
+
+            <div id="submitStatus" class="mb-3 p-3 rounded-2xl border text-xs font-bold flex items-center justify-center gap-2 bg-slate-900/90 border-slate-700 text-slate-300">
+                <i class="fa-solid fa-cloud-arrow-up text-amber-400"></i>
+                <span id="submitStatusText">Menyediakan penghantaran markah...</span>
+            </div>
+
+            <div class="flex-1 overflow-y-auto bg-slate-900/70 p-3 rounded-2xl border border-slate-700 text-left mb-4 text-xs md:text-sm">
+                <h4 class="font-game text-amber-400 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check"></i> Ringkasan Soalan & Jawapan:
+                </h4>
+                <div id="summaryList" class="space-y-2"></div>
+            </div>
+
+            <button onclick="resetGame()" class="bg-red-600 hover:bg-red-500 text-white font-game text-lg px-8 py-3 rounded-full border-2 border-yellow-300 shadow-xl transition transform hover:scale-105 mx-auto">
+                <i class="fa-solid fa-rotate-right mr-2"></i> Main Lagi
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Default Google Apps Script URL
+        const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBTja-oi1i-OuuerW5GFrb-TusRfoO_Pqj4Zu5KL8LJIR4-rBWxqGjrJGm9SN3AeFiVA/exec";
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Web Audio API Synthesizer
+        let audioCtx = null;
+        let soundMuted = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (soundMuted || !audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                const now = audioCtx.currentTime;
+                if (type === 'launch') {
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(400, now + 0.15);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                } else if (type === 'woodBreak') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(120, now);
+                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.1);
+                    osc.frequency.setValueAtTime(783.99, now + 0.2);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.setValueAtTime(180, now + 0.15);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function toggleAudio() {
+            soundMuted = !soundMuted;
+            const icon = document.getElementById('soundIcon');
+            if (soundMuted) {
+                icon.className = 'fa-solid fa-volume-xmark text-lg';
+            } else {
+                icon.className = 'fa-solid fa-volume-high text-lg';
+            }
+        }
+
+        // Helper shuffle function
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Player Information
+        let playerInfo = {
+            name: '',
+            studentClass: '',
+            scriptUrl: DEFAULT_SCRIPT_URL
+        };
+
+        const originalQuestionsData = [
+            {
+                id: 1,
+                q: "Apakah fungsi utama mata jahitan Kia dalam jahitan tangan?",
+                correct: "Memulakan dan mematikan sesuatu jahitan tangan serta mencantumkan fabrik secara kukuh",
+                wrong: ["Sebagai jahitan sementara untuk menetapkan kedudukan fabrik", "Mengemaskan bahagian tepi fabrik yang terurai", "Memuatkan butang pada artikel jahitan"]
+            },
+            {
+                id: 2,
+                q: "Mata jahitan manakah yang digunakan sebagai jahitan sementara untuk menetapkan kedudukan kepingan fabrik sebelum dijahit?",
+                correct: "Jahitan Jelujur Kasar",
+                wrong: ["Jahitan Kia", "Jahitan Sembat", "Jahitan Insang Pari"]
+            },
+            {
+                id: 3,
+                q: "Apakah kegunaan utama mata jahitan Jelujur Halus dalam penghasilan artikel jahitan?",
+                correct: "Membuat kedut pada fabrik dan mencantumkan kepingan fabrik secara tetap",
+                wrong: ["Mematikan jahitan tangan di bahagian awal dan akhir", "Mengemaskan lubang butang", "Menyemat kertas perang pola"]
+            },
+            {
+                id: 4,
+                q: "Mata jahitan tangan manakah yang berfungsi untuk mengemaskan bahagian kelepak, lipatan, atau ruang yang ditinggalkan selepas artikel jahitan diterbalikkan?",
+                correct: "Jahitan Sembat",
+                wrong: ["Jahitan Insang Pari", "Jahitan Kia", "Jahitan Silang Pangkah"]
+            },
+            {
+                id: 5,
+                q: "Jenis mata jahitan tangan manakah yang digunakan khusus untuk mengemaskan bahagian tepi fabrik serta bertindak sebagai jahitan hiasan?",
+                correct: "Jahitan Insang Pari",
+                wrong: ["Jahitan Sembat", "Jahitan Jelujur Kasar", "Jahitan Kia"]
+            },
+            {
+                id: 6,
+                q: "Mengapakah bahagian tepi fabrik artikel jahitan perlu dijahit dengan mata jahitan kemasan yang sesuai?",
+                correct: "Supaya benang fabrik tidak terurai dan hasil jahitan kelihatan kemas serta kukuh",
+                wrong: ["Untuk membolehkan artikel jahitan menyerap air dengan cepat", "Bagi mengelakkan warna fabrik pudar apabila dibasuh", "Untuk membolehkan kertas perang pola digunting"]
+            },
+            {
+                id: 7,
+                q: "Apakah mata jahitan tangan yang paling sesuai digunakan untuk mencantumkan kepingan fabrik secara kukuh sebagai pengganti jahitan mesin?",
+                correct: "Jahitan Kia",
+                wrong: ["Jahitan Jelujur Kasar", "Jahitan Sembat", "Jahitan Insang Pari"]
+            },
+            {
+                id: 8,
+                q: "Apakah tujuan mata jahitan sementara (seperti Jelujur Kasar) dibuat pada fabrik sebelum jahitan kekal dijalankan?",
+                correct: "Menetapkan kedudukan kepingan fabrik supaya tidak beranjak semasa dijahit",
+                wrong: ["Menambah kecantikan corak fabrik", "Menutup lubang pada artikel jahitan", "Menguatkan permukaan luar fabrik"]
+            },
+            {
+                id: 9,
+                q: "Antara berikut, yang manakah BUKAN merupakan jenis mata jahitan tangan yang dipelajari dalam RBT Tahun 5?",
+                correct: "Jahitan Rantai Mesin Industri",
+                wrong: ["Jahitan Kia", "Jahitan Insang Pari", "Jahitan Sembat"]
+            },
+            {
+                id: 10,
+                q: "Apakah alatan utama yang digunakan bersama benang untuk menghasilkan mata jahitan tangan pada kepingan fabrik?",
+                correct: "Jarum jahit tangan",
+                wrong: ["Jarum peniti", "Peretas jahitan", "Roda surih"]
+            },
+            {
+                id: 11,
+                q: "Alatan manakah yang digunakan untuk meretas dan memotong mata jahitan yang tersilap dibuat pada fabrik?",
+                correct: "Peretas jahitan",
+                wrong: ["Gunting fabrik", "Jarum peniti", "Kapur tukang jahit"]
+            },
+            {
+                id: 12,
+                q: "Apabila artikel jahitan diterbalikkan selepas dijahit, mata jahitan manakah yang paling sesuai digunakan untuk menjahit dan menutup ruang kelepak antara 5 cm hingga 7 cm tersebut?",
+                correct: "Jahitan Sembat",
+                wrong: ["Jahitan Silang Pangkah", "Jahitan Jelujur Kasar", "Jahitan Lubang Butang"]
+            },
+            {
+                id: 13,
+                q: "Apakah jenis mata jahitan yang kelihatan menyerupai bentuk 'X' dan digunakan sebagai jahitan hiasan atau mengemaskan kelepak?",
+                correct: "Jahitan Silang Pangkah",
+                wrong: ["Jahitan Insang Pari", "Jahitan Kia", "Jahitan Jelujur Halus"]
+            },
+            {
+                id: 14,
+                q: "Antara berikut, apakah ciri utama jahitan Kia jika dibandingkan dengan jahitan jelujur kasar?",
+                correct: "Rupa jahitan Kia kukuh dan menyerupai jahitan mesin di sebelah luar",
+                wrong: ["Jahitan Kia mudah dicabut dan merupakan jahitan sementara", "Jahitan Kia hanya dibuat pada kertas perang", "Jahitan Kia dibuat tanpa menggunakan benang"]
+            },
+            {
+                id: 15,
+                q: "Apakah tujuan memasang mata jahitan hiasan seperti jahitan Insang Pari pada bahagian tepi artikel jahitan?",
+                correct: "Untuk mencantikkan artikel jahitan dan mengemaskan bahagian tepi",
+                wrong: ["Untuk menutup velcro", "Untuk memegang span di bahagian dalam", "Untuk memudahkan proses menggunting pola"]
+            },
+            {
+                id: 16,
+                q: "Semasa melakukan mata jahitan tangan, apakah alatan yang digunakan untuk menetapkan kedudukan fabrik sebelum menjahit supaya kain tidak tergelincir?",
+                correct: "Jarum peniti",
+                wrong: ["Roda surih", "Peretas jahitan", "Pembaris"]
+            },
+            {
+                id: 17,
+                q: "Apakah mata jahitan yang sesuai digunakan untuk mengemaskan bahagian tepi lubang butang supaya benang pada tepi lubang tidak terurai?",
+                correct: "Jahitan Lubang Butang",
+                wrong: ["Jahitan Kia", "Jahitan Jelujur Kasar", "Jahitan Sembat"]
+            },
+            {
+                id: 18,
+                q: "Selain menjahit secara manual menggunakan tangan, apakah alatan moden bersaiz kecil yang boleh digunakan untuk membuat mata jahitan secara cepat pada fabrik?",
+                correct: "Mesin jahit mini / mesin jahit tangan",
+                wrong: ["Gunting fabrik", "Peretas jahit elektrik", "Roda surih beroda dua"]
+            },
+            {
+                id: 19,
+                q: "Antara urutan berikut, manakah langkah yang betul melibatkan mata jahitan semasa menghasilkan artikel jahitan?",
+                correct: "Menyemat pola dengan jarum peniti -> Menggunting fabrik -> Menjahit kepingan fabrik dengan mata jahitan",
+                wrong: ["Menggunting fabrik -> Menjahit mata jahitan -> Menyemat pola jarum peniti", "Menjahit mata jahitan -> Menyemat pola -> Menggunting fabrik", "Menterbalikkan fabrik -> Menggunting pola -> Menjahit"]
+            },
+            {
+                id: 20,
+                q: "Apakah kelebihan utama menguasai pelbagai jenis mata jahitan tangan bagi seorang murid RBT?",
+                correct: "Boleh menghasilkan dan membaiki pelbagai artikel jahitan sendiri secara kemas dan kreatif",
+                wrong: ["Tidak perlu menggunakan benang dan fabrik semasa menjahit", "Boleh menggantikan proses melukis pola kertas perang", "Dapat mengelakkan penggunaan gunting fabrik"]
+            }
+        ];
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let score = 0;
+        let defeatedCount = 0;
+        let lives = 20;
+        let userAnswers = {};
+        let activeLionForQuiz = null;
+        let questionsDatabase = [];
+
+        const slingshot = { x: 180, y: 520 };
+        const bird = {
+            x: 180,
+            y: 460,
+            radius: 22,
+            vx: 0,
+            vy: 0,
+            isDragging: false,
+            isFlying: false
+        };
+
+        let lions = [];
+        let blocks = [];
+        let particles = [];
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastMsg');
+            const toastText = document.getElementById('toastText');
+            if (toast && toastText) {
+                toastText.innerText = msg;
+                toast.classList.remove('-translate-y-16', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('-translate-y-16', 'opacity-0');
+                }, 3500);
+            }
+        }
+
+        function startGame() {
+            const nameInput = document.getElementById('inputName').value.trim();
+            const classInput = document.getElementById('inputClass').value.trim();
+
+            if (!nameInput) {
+                showToast("⚠️ Sila masukkan Nama Murid terlebih dahulu!");
+                document.getElementById('inputName').focus();
+                return;
+            }
+            if (!classInput) {
+                showToast("⚠️ Sila masukkan Kelas murid!");
+                document.getElementById('inputClass').focus();
+                return;
+            }
+
+            playerInfo.name = nameInput;
+            playerInfo.studentClass = classInput;
+
+            const badge = document.getElementById('playerBadge');
+            if (badge) {
+                badge.innerHTML = `<i class="fa-solid fa-user-graduate text-yellow-300 mr-1"></i> ${playerInfo.name} (${playerInfo.studentClass})`;
+            }
+
+            initAudio();
+            const overlay = document.getElementById('startOverlay');
+            if (overlay) {
+                overlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 300);
+            }
+            showToast(`Selamat mencuba, ${playerInfo.name}! Tarik lastik untuk menembak singa.`);
+        }
+
+        function resetBirdPosition() {
+            bird.x = slingshot.x;
+            bird.y = slingshot.y - 60;
+            bird.vx = 0;
+            bird.vy = 0;
+            bird.isFlying = false;
+            bird.isDragging = false;
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreText').innerText = score;
+            document.getElementById('defeatedText').innerText = `${defeatedCount} / 20`;
+            document.getElementById('livesText').innerText = `${lives} 🐦`;
+        }
+
+        function resetGame() {
+            score = 0;
+            defeatedCount = 0;
+            lives = 20;
+            userAnswers = {};
+            activeLionForQuiz = null;
+
+            updateHUD();
+            resetBirdPosition();
+            initLionsAndBlocks();
+
+            document.getElementById('victoryModal').classList.add('hidden');
+            document.getElementById('victoryModal').classList.remove('flex');
+            document.getElementById('quizModal').classList.add('hidden');
+            document.getElementById('quizModal').classList.remove('flex');
+            
+            showToast("Permainan telah dimulakan semula!");
+        }
+
+        function initLionsAndBlocks() {
+            lions = [];
+            blocks = [];
+            particles = [];
+
+            // Shuffle option labels for all 20 questions
+            questionsDatabase = originalQuestionsData.map(qObj => {
+                const allOpts = [
+                    { text: qObj.correct, isCorrect: true },
+                    ...qObj.wrong.map(wText => ({ text: wText, isCorrect: false }))
+                ];
+                const shuffledOpts = shuffleArray(allOpts);
+                const labels = ['A', 'B', 'C', 'D'];
+                const formattedOptions = shuffledOpts.map((opt, idx) => ({
+                    label: labels[idx],
+                    text: opt.text,
+                    isCorrect: opt.isCorrect
+                }));
+
+                return {
+                    id: qObj.id,
+                    q: qObj.q,
+                    options: formattedOptions,
+                    originalCorrect: qObj.correct
+                };
+            });
+
+            // Grid layout for 20 Lions on wood/stone structures
+            const startX = 700;
+            const startY = 620;
+            const cols = 5;
+            const rows = 4;
+            const spacingX = 110;
+            const spacingY = 120;
+
+            let lionIndex = 0;
+            for (let r = 0; r < rows; r++) {
+                const currentY = startY - (r * spacingY);
+                
+                blocks.push({
+                    x: startX - 30,
+                    y: currentY + 18,
+                    w: (cols * spacingX) + 40,
+                    h: 18,
+                    type: 'wood',
+                    destroyed: false
+                });
+
+                for (let c = 0; c < cols; c++) {
+                    if (lionIndex < 20) {
+                        const currentX = startX + (c * spacingX);
+                        
+                        blocks.push({
+                            x: currentX - 12,
+                            y: currentY - 50,
+                            w: 24,
+                            h: 68,
+                            type: r % 2 === 0 ? 'wood' : 'stone',
+                            destroyed: false
+                        });
+
+                        lions.push({
+                            id: lionIndex + 1,
+                            x: currentX,
+                            y: currentY - 25,
+                            radius: 22,
+                            defeated: false,
+                            qData: questionsDatabase[lionIndex]
+                        });
+
+                        lionIndex++;
+                    }
+                }
+            }
+        }
+
+        function getCanvasCoords(evt) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let clientX = evt.clientX;
+            let clientY = evt.clientY;
+
+            if (evt.touches && evt.touches.length > 0) {
+                clientX = evt.touches[0].clientX;
+                clientY = evt.touches[0].clientY;
+            }
+
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+
+        function handlePointerDown(px, py) {
+            if (bird.isFlying) return;
+
+            const distToBird = Math.hypot(px - bird.x, py - bird.y);
+            if (distToBird < bird.radius * 2) {
+                if (lives <= 0) {
+                    showToast("Peluang telah habis! 20 ekor burung telah digunakan.");
+                    return;
+                }
+                bird.isDragging = true;
+            }
+        }
+
+        function handlePointerMove(px, py) {
+            if (bird.isDragging && lives > 0) {
+                const dx = px - slingshot.x;
+                const dy = py - (slingshot.y - 60);
+                const maxPull = 120;
+                const dist = Math.hypot(dx, dy);
+
+                if (dist > maxPull) {
+                    const angle = Math.atan2(dy, dx);
+                    bird.x = slingshot.x + Math.cos(angle) * maxPull;
+                    bird.y = (slingshot.y - 60) + Math.sin(angle) * maxPull;
+                } else {
+                    bird.x = px;
+                    bird.y = py;
+                }
+            }
+        }
+
+        function handlePointerUp() {
+            if (bird.isDragging && lives > 0) {
+                bird.isDragging = false;
+                bird.isFlying = true;
+
+                lives--;
+                updateHUD();
+
+                const dx = slingshot.x - bird.x;
+                const dy = (slingshot.y - 60) - bird.y;
+                bird.vx = dx * 0.18;
+                bird.vy = dy * 0.18;
+
+                playSound('launch');
+            }
+        }
+
+        canvas.addEventListener('mousedown', e => { const c = getCanvasCoords(e); handlePointerDown(c.x, c.y); });
+        canvas.addEventListener('mousemove', e => { const c = getCanvasCoords(e); handlePointerMove(c.x, c.y); });
+        window.addEventListener('mouseup', () => handlePointerUp());
+
+        canvas.addEventListener('touchstart', e => { e.preventDefault(); const c = getCanvasCoords(e); handlePointerDown(c.x, c.y); }, {passive: false});
+        canvas.addEventListener('touchmove', e => { e.preventDefault(); const c = getCanvasCoords(e); handlePointerMove(c.x, c.y); }, {passive: false});
+        window.addEventListener('touchend', () => handlePointerUp());
+
+        function openQuiz(lion) {
+            activeLionForQuiz = lion;
+            const qData = lion.qData;
+
+            document.getElementById('modalLionBadge').innerText = `Singa #${lion.id}`;
+            document.getElementById('quizQuestion').innerText = `${lion.id}. ${qData.q}`;
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            const feedback = document.getElementById('feedbackBox');
+            feedback.className = 'hidden p-4 rounded-2xl border-2 font-bold text-center text-sm md:text-base mb-2';
+            feedback.innerHTML = '';
+
+            document.getElementById('nextBtn').classList.add('hidden');
+
+            qData.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-left p-3.5 rounded-2xl border-2 border-slate-600 bg-slate-900/80 hover:bg-amber-600/30 hover:border-amber-400 transition flex items-start gap-3 text-sm md:text-base font-semibold text-slate-200 shadow";
+                btn.innerHTML = `
+                    <span class="font-game text-yellow-400 bg-slate-800 px-3 py-1 rounded-xl border border-slate-600 shrink-0">${opt.label}</span>
+                    <span class="pt-0.5">${opt.text}</span>
+                `;
+                btn.onclick = () => selectAnswer(opt, lion);
+                container.appendChild(btn);
+            });
+
+            const modal = document.getElementById('quizModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function selectAnswer(selectedOpt, lion) {
+            const btns = document.querySelectorAll('.option-btn');
+            btns.forEach(b => b.disabled = true);
+
+            const feedback = document.getElementById('feedbackBox');
+            feedback.classList.remove('hidden');
+
+            userAnswers[lion.id] = {
+                question: lion.qData.q,
+                chosen: selectedOpt.text,
+                correct: lion.qData.originalCorrect,
+                isCorrect: selectedOpt.isCorrect
+            };
+
+            lion.defeated = true;
+            defeatedCount++;
+            createExplosion(lion.x, lion.y, '#f59e0b', 30);
+
+            if (selectedOpt.isCorrect) {
+                score += 100;
+                playSound('correct');
+                feedback.className = 'p-4 rounded-2xl border-2 font-bold text-center text-sm md:text-base mb-2 bg-emerald-950/80 border-emerald-500 text-emerald-300 animate-bounce';
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check text-xl mr-1.5"></i> TEPAT DAN BETUL! (+100 Markah)`;
+            } else {
+                playSound('wrong');
+                feedback.className = 'p-4 rounded-2xl border-2 font-bold text-center text-sm md:text-base mb-2 bg-red-950/80 border-red-500 text-red-300';
+                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark text-xl mr-1.5"></i> KURANG TEPAT!<br><span class="text-xs text-amber-200 mt-1 block">Jawapan Sebenar: <strong>${lion.qData.originalCorrect}</strong></span>`;
+            }
+
+            updateHUD();
+            document.getElementById('nextBtn').classList.remove('hidden');
+        }
+
+        function closeQuizModal() {
+            const modal = document.getElementById('quizModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            
+            resetBirdPosition();
+
+            if (defeatedCount >= 20 || lives <= 0) {
+                showVictoryModal();
+            }
+        }
+
+        function confirmEarlyEnd() {
+            if (!playerInfo.name) {
+                showToast("⚠️ Sila mula permainan terlebih dahulu!");
+                return;
+            }
+            const modal = document.getElementById('confirmEndModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeConfirmEndModal() {
+            const modal = document.getElementById('confirmEndModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function processEarlyEnd() {
+            closeConfirmEndModal();
+            showVictoryModal(true);
+        }
+
+        function showVictoryModal(isEarlyEnd = false) {
+            document.getElementById('finalScore').innerText = score;
+            const accuracy = defeatedCount > 0 ? Math.round((score / (defeatedCount * 100)) * 100) : 0;
+            document.getElementById('finalAccuracy').innerText = `${accuracy}%`;
+
+            if (defeatedCount >= 20) {
+                document.getElementById('victoryIcon').innerText = '🏆';
+                document.getElementById('victoryTitle').innerText = 'TAHNIAH! KEPUTUSAN CEMERLANG!';
+                document.getElementById('victorySubtitle').innerText = 'Anda telah menyelesaikan semua 20 soalan RBT!';
+            } else if (isEarlyEnd) {
+                document.getElementById('victoryIcon').innerText = '📋';
+                document.getElementById('victoryTitle').innerText = 'PERMAINAN DITAMATKAN AWAL';
+                document.getElementById('victorySubtitle').innerText = `Pencapaian terkini anda (${defeatedCount} / 20 singa) telah direkodkan!`;
+            } else {
+                document.getElementById('victoryIcon').innerText = '🎯';
+                document.getElementById('victoryTitle').innerText = 'PERMAINAN TAMAT';
+                document.getElementById('victorySubtitle').innerText = `Semua 20 ekor burung telah digunakan! Anda berjaya menewaskan ${defeatedCount} / 20 singa.`;
+            }
+
+            const starsDisplay = document.getElementById('starsDisplay');
+            if (accuracy >= 80 && defeatedCount >= 15) {
+                starsDisplay.innerHTML = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>';
+            } else if (accuracy >= 50 && defeatedCount >= 10) {
+                starsDisplay.innerHTML = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>';
+            } else {
+                starsDisplay.innerHTML = '<i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>';
+            }
+
+            const summaryList = document.getElementById('summaryList');
+            summaryList.innerHTML = '';
+
+            for (let i = 1; i <= 20; i++) {
+                const ans = userAnswers[i];
+                if (ans) {
+                    const item = document.createElement('div');
+                    item.className = `p-2.5 rounded-xl border text-xs leading-relaxed ${ans.isCorrect ? 'bg-emerald-950/50 border-emerald-600/60 text-emerald-200' : 'bg-red-950/50 border-red-600/60 text-red-200'}`;
+                    item.innerHTML = `
+                        <div class="font-bold mb-1">${i}. ${ans.question}</div>
+                        <div>Jawapan Anda: <strong>${ans.chosen}</strong> ${ans.isCorrect ? '✅' : '❌'}</div>
+                        ${!ans.isCorrect ? `<div class="text-amber-300">Jawapan Betul: <strong>${ans.correct}</strong></div>` : ''}
+                    `;
+                    summaryList.appendChild(item);
+                }
+            }
+
+            submitToGoogleSheets(score, accuracy, defeatedCount);
+
+            const vicModal = document.getElementById('victoryModal');
+            vicModal.classList.remove('hidden');
+            vicModal.classList.add('flex');
+        }
+
+        // Auto-hantar sekiranya murid menutup atau keluar daripada tetingkap browser
+        let hasAutoSubmitted = false;
+        window.addEventListener('beforeunload', function () {
+            if (!hasAutoSubmitted && playerInfo.name && (defeatedCount > 0 || score > 0)) {
+                hasAutoSubmitted = true;
+                const accuracy = defeatedCount > 0 ? Math.round((score / (defeatedCount * 100)) * 100) : 0;
+                const payload = {
+                    nama: playerInfo.name,
+                    kelas: playerInfo.studentClass,
+                    markah: score,
+                    singaTewas: defeatedCount,
+                    ketepatan: accuracy
+                };
+                fetch(playerInfo.scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    keepalive: true,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
+        });
+
+        function submitToGoogleSheets(finalScore, accuracy, lionsKilled) {
+            const statusBox = document.getElementById('submitStatus');
+            const statusText = document.getElementById('submitStatusText');
+
+            statusBox.className = "mb-3 p-3 rounded-2xl border text-xs font-bold flex items-center justify-center gap-2 bg-amber-950/80 border-amber-500 text-amber-200 animate-pulse";
+            statusText.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400"></i> Merekodkan markah ke Google Sheets guru...`;
+
+            const payload = {
+                nama: playerInfo.name,
+                kelas: playerInfo.studentClass,
+                markah: finalScore,
+                singaTewas: lionsKilled,
+                ketepatan: accuracy
+            };
+
+            fetch(playerInfo.scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                statusBox.className = "mb-3 p-3 rounded-2xl border text-xs font-bold flex items-center justify-center gap-2 bg-emerald-950/90 border-emerald-500 text-emerald-300";
+                statusText.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-base"></i> Markah ${playerInfo.name} (${playerInfo.studentClass}) berjaya direkodkan ke Google Sheets!`;
+            })
+            .catch(err => {
+                console.error("Error submitting to Google Sheets:", err);
+                statusBox.className = "mb-3 p-3 rounded-2xl border text-xs font-bold flex items-center justify-center gap-2 bg-red-950/90 border-red-500 text-red-300";
+                statusText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400"></i> Gagal menghantar markah. Sila semak sambungan internet.`;
+            });
+        }
+
+        function createExplosion(x, y, color, count = 20) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 2;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: Math.random() * 4 + 2,
+                    color: color,
+                    life: 1.0
+                });
+            }
+        }
+
+        function updatePhysics() {
+            if (bird.isFlying) {
+                bird.x += bird.vx;
+                bird.y += bird.vy;
+                bird.vy += 0.4; // Gravity
+
+                // Collision with Blocks -> Blocks shatter
+                blocks.forEach(b => {
+                    if (!b.destroyed) {
+                        if (bird.x + bird.radius > b.x && bird.x - bird.radius < b.x + b.w &&
+                            bird.y + bird.radius > b.y && bird.y - bird.radius < b.y + b.h) {
+                            
+                            b.destroyed = true;
+                            createExplosion(b.x + b.w / 2, b.y + b.h / 2, b.type === 'wood' ? '#d97706' : '#94a3b8', 12);
+                            playSound('woodBreak');
+
+                            bird.vx *= 0.8;
+                            bird.vy *= 0.8;
+                        }
+                    }
+                });
+
+                // Collision with Lions -> Opens Quiz Modal
+                lions.forEach(lion => {
+                    if (!lion.defeated) {
+                        const dist = Math.hypot(bird.x - lion.x, bird.y - lion.y);
+                        if (dist < bird.radius + lion.radius) {
+                            bird.isFlying = false;
+                            openQuiz(lion);
+                        }
+                    }
+                });
+
+                // Ground and Bounds Check
+                if (bird.y > 660 || bird.x > 1300 || bird.x < -50) {
+                    bird.isFlying = false;
+                    resetBirdPosition();
+                    if (lives <= 0 && defeatedCount < 20) {
+                        showVictoryModal();
+                    }
+                }
+            }
+
+            // Update particle explosions
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.2;
+                p.life -= 0.025;
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        function drawBlocks() {
+            blocks.forEach(b => {
+                if (!b.destroyed) {
+                    ctx.save();
+                    if (b.type === 'wood') {
+                        ctx.fillStyle = '#b45309';
+                        ctx.strokeStyle = '#78350f';
+                    } else {
+                        ctx.fillStyle = '#64748b';
+                        ctx.strokeStyle = '#334155';
+                    }
+                    ctx.lineWidth = 2;
+                    ctx.fillRect(b.x, b.y, b.w, b.h);
+                    ctx.strokeRect(b.x, b.y, b.w, b.h);
+                    ctx.restore();
+                }
+            });
+        }
+
+        function drawLion(lion) {
+            if (lion.defeated) return;
+
+            ctx.save();
+            ctx.fillStyle = '#d97706';
+            ctx.beginPath();
+            ctx.arc(lion.x, lion.y, lion.radius + 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(lion.x, lion.y, lion.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(lion.x - 7, lion.y - 4, 3, 0, Math.PI * 2);
+            ctx.arc(lion.x + 7, lion.y - 4, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#78350f';
+            ctx.beginPath();
+            ctx.arc(lion.x, lion.y + 2, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(lion.x, lion.y - lion.radius - 8, 10, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(lion.id, lion.x, lion.y - lion.radius - 8);
+
+            ctx.restore();
+        }
+
+        function drawSlingshotAndBirds() {
+            ctx.save();
+            ctx.strokeStyle = '#78350f';
+            ctx.lineWidth = 10;
+            ctx.lineCap = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(slingshot.x - 15, slingshot.y);
+            ctx.lineTo(slingshot.x - 10, slingshot.y - 60);
+            ctx.moveTo(slingshot.x + 15, slingshot.y);
+            ctx.lineTo(slingshot.x + 10, slingshot.y - 60);
+            ctx.moveTo(slingshot.x, slingshot.y);
+            ctx.lineTo(slingshot.x, slingshot.y + 40);
+            ctx.stroke();
+
+            if (bird.isDragging) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([6, 6]);
+                ctx.beginPath();
+                
+                let simX = bird.x;
+                let simY = bird.y;
+                let simVx = (slingshot.x - bird.x) * 0.18;
+                let simVy = ((slingshot.y - 60) - bird.y) * 0.18;
+
+                ctx.moveTo(simX, simY);
+                for (let i = 0; i < 25; i++) {
+                    simX += simVx;
+                    simY += simVy;
+                    simVy += 0.4;
+                    ctx.lineTo(simX, simY);
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.moveTo(slingshot.x - 10, slingshot.y - 60);
+                ctx.lineTo(bird.x, bird.y);
+                ctx.stroke();
+            }
+
+            if (lives > 0) {
+                ctx.fillStyle = '#dc2626';
+                ctx.beginPath();
+                ctx.arc(bird.x, bird.y, bird.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#fef08a';
+                ctx.beginPath();
+                ctx.arc(bird.x + 4, bird.y + 6, bird.radius * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(bird.x + 6, bird.y - 4, 5, 0, Math.PI * 2);
+                ctx.arc(bird.x + 14, bird.y - 4, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.arc(bird.x + 8, bird.y - 4, 2, 0, Math.PI * 2);
+                ctx.arc(bird.x + 16, bird.y - 4, 2, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.moveTo(bird.x + 12, bird.y);
+                ctx.lineTo(bird.x + 22, bird.y + 4);
+                ctx.lineTo(bird.x + 12, bird.y + 8);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            if (bird.isDragging) {
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.moveTo(slingshot.x + 10, slingshot.y - 60);
+                ctx.lineTo(bird.x, bird.y);
+                ctx.stroke();
+            }
+
+            const reserveCount = Math.min(lives - 1, 5);
+            for (let i = 0; i < reserveCount; i++) {
+                const rx = slingshot.x - 50 - (i * 22);
+                const ry = slingshot.y + 30;
+                ctx.fillStyle = '#dc2626';
+                ctx.beginPath();
+                ctx.arc(rx, ry, 10, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Ground
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(0, 640, canvas.width, 80);
+            ctx.fillStyle = '#86efac';
+            ctx.fillRect(0, 640, canvas.width, 10);
+
+            drawBlocks();
+            lions.forEach(drawLion);
+            drawSlingshotAndBirds();
+
+            particles.forEach(p => {
+                ctx.save();
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            updatePhysics();
+            requestAnimationFrame(render);
+        }
+
+        window.onload = function() {
+            initLionsAndBlocks();
+            render();
+        };
+    </script>
+</body>
+</html>
